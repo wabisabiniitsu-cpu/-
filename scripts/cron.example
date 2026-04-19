@@ -1,0 +1,18 @@
+# ハリナビ マーケティング分析ツール — cron 例
+#
+# crontab -e で以下を登録 (毎朝 8:00 JST に前日分を集計送信)
+# 環境変数を読ませるため明示的に PATH と .env を source する
+
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+MAILTO=""
+
+# 毎日 08:00 に昨日分を集計 → HTML レポート生成 → メール送信
+0 8 * * * cd /opt/harinavi-marketing && \
+  set -a && . ./.env && set +a && \
+  /opt/harinavi-marketing/.venv/bin/python -m src.main run-daily \
+    >> /var/log/harinavi-marketing.log 2>&1
+
+# 特定日を再実行したい場合の例
+# 0 9 1 * * cd /opt/harinavi-marketing && \
+#   /opt/harinavi-marketing/.venv/bin/python -m src.main run-daily --date 2026-04-01

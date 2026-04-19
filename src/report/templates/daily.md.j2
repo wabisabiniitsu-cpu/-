@@ -1,0 +1,88 @@
+# {{ site.name }} マーケティングレポート ({{ period.start }} 〜 {{ period.end }})
+
+生成日時: {{ generated_at }}
+比較モード: **{{ comparison_label }}**
+
+---
+
+## 1. サマリ指標
+
+| 指標 | 当期 | 前期 | 変化 |
+|---|---:|---:|---:|
+{%- for d in deltas_ga4 %}
+| {{ d.label }} | {{ fmt(d.label, d.current) }} | {{ fmt(d.label, d.previous) }} | {{ fmt_change(d.label, d.change, d.change_pct) }} |
+{%- endfor %}
+
+{% if gsc_current %}
+### Search Console
+
+| 指標 | 当期 | 前期 | 変化 |
+|---|---:|---:|---:|
+{%- for d in deltas_gsc %}
+| {{ d.label }} | {{ fmt(d.label, d.current) }} | {{ fmt(d.label, d.previous) }} | {{ fmt_change(d.label, d.change, d.change_pct) }} |
+{%- endfor %}
+{% endif %}
+
+---
+
+## 2. アラート
+
+{% if alerts %}
+{%- for a in alerts %}
+- **[{{ a.severity|upper }}]** {{ a.metric }}: {{ a.message }}
+{%- endfor %}
+{% else %}
+アラートはありません。
+{% endif %}
+
+---
+
+## 3. 上位ページ (GA4)
+
+| パス | タイトル | PV | UU | 平均滞在 |
+|---|---|---:|---:|---:|
+{%- for p in top_pages %}
+| `{{ p.path }}` | {{ p.title }} | {{ p.page_views }} | {{ p.users }} | {{ "%.1f"|format(p.avg_time_on_page) }}s |
+{%- endfor %}
+
+## 4. 流入チャネル
+
+| チャネル | セッション | UU | CV |
+|---|---:|---:|---:|
+{%- for c in channels %}
+| {{ c.channel }} | {{ c.sessions }} | {{ c.users }} | {{ c.conversions }} |
+{%- endfor %}
+
+---
+
+## 5. 検索パフォーマンス
+
+### 上位クエリ (クリック順)
+
+| クエリ | クリック | 表示 | CTR | 順位 |
+|---|---:|---:|---:|---:|
+{%- for q in top_queries %}
+| {{ q.query }} | {{ q.clicks }} | {{ q.impressions }} | {{ "%.1f"|format(q.ctr * 100) }}% | {{ "%.1f"|format(q.position) }} |
+{%- endfor %}
+
+### 順位が上昇したクエリ
+
+{% if rising_queries %}
+| クエリ | クリック | 表示 | 順位 |
+|---|---:|---:|---:|
+{%- for q in rising_queries %}
+| {{ q.query }} | {{ q.clicks }} | {{ q.impressions }} | {{ "%.1f"|format(q.position) }} |
+{%- endfor %}
+{% else %}
+上昇クエリは検出されませんでした。
+{% endif %}
+
+---
+
+## 6. マーケターからの示唆 (Claude {{ claude_model }})
+
+{{ insights_markdown }}
+
+---
+
+*このレポートは自動生成されています。数値は GA4 Data API と Search Console API の返却値に基づきます。*

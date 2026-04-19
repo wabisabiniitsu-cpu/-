@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Secrets
+.env
+service_account.json
+credentials.json
+token.json
+
+# Data
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Reports
+reports/
+
+# Config overrides
+config.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

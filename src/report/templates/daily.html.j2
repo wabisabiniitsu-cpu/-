@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ site.name }} マーケティングレポート {{ period.end }}</title>
+<style>
+  body { font-family: -apple-system, "Helvetica Neue", "Hiragino Sans", sans-serif; color: #222; max-width: 880px; margin: 2em auto; padding: 0 1em; line-height: 1.6; }
+  h1 { border-bottom: 3px solid #2a6df4; padding-bottom: .3em; }
+  h2 { border-left: 4px solid #2a6df4; padding-left: .5em; margin-top: 2em; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.95em; }
+  th, td { border: 1px solid #ddd; padding: .4em .6em; }
+  th { background: #f4f7ff; text-align: left; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .up { color: #087443; }
+  .down { color: #b00020; }
+  .alert { background: #fff7e6; border-left: 4px solid #e07a00; padding: .6em 1em; margin: .4em 0; }
+  .alert.warning { background: #fdecea; border-left-color: #b00020; }
+  pre, code { font-family: ui-monospace, Menlo, monospace; background: #f5f5f7; padding: 1px 4px; border-radius: 3px; }
+  .meta { color: #777; font-size: .9em; }
+  .insights { background: #f9fbff; padding: 1em 1.4em; border-radius: 6px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>{{ site.name }} マーケティングレポート</h1>
+<p class="meta">期間: {{ period.start }} 〜 {{ period.end }} / 生成日時: {{ generated_at }} / 比較: {{ comparison_label }}</p>
+
+<h2>1. サマリ指標 (GA4)</h2>
+<table>
+  <thead><tr><th>指標</th><th>当期</th><th>前期</th><th>変化</th></tr></thead>
+  <tbody>
+  {%- for d in deltas_ga4 %}
+    <tr>
+      <td>{{ d.label }}</td>
+      <td class="num">{{ fmt(d.label, d.current) }}</td>
+      <td class="num">{{ fmt(d.label, d.previous) }}</td>
+      <td class="num {{ 'up' if d.change_pct > 0 else ('down' if d.change_pct < 0 else '') }}">
+        {{ fmt_change(d.label, d.change, d.change_pct) }}
+      </td>
+    </tr>
+  {%- endfor %}
+  </tbody>
+</table>
+
+{% if gsc_current %}
+<h2>2. Search Console</h2>
+<table>
+  <thead><tr><th>指標</th><th>当期</th><th>前期</th><th>変化</th></tr></thead>
+  <tbody>
+  {%- for d in deltas_gsc %}
+    <tr>
+      <td>{{ d.label }}</td>
+      <td class="num">{{ fmt(d.label, d.current) }}</td>
+      <td class="num">{{ fmt(d.label, d.previous) }}</td>
+      <td class="num {{ 'up' if d.change_pct > 0 else ('down' if d.change_pct < 0 else '') }}">
+        {{ fmt_change(d.label, d.change, d.change_pct) }}
+      </td>
+    </tr>
+  {%- endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<h2>3. アラート</h2>
+{% if alerts %}
+  {%- for a in alerts %}
+    <div class="alert {{ a.severity }}"><strong>{{ a.metric }}</strong>: {{ a.message }}</div>
+  {%- endfor %}
+{% else %}
+  <p>アラートはありません。</p>
+{% endif %}
+
+<h2>4. 上位ページ</h2>
+<table>
+  <thead><tr><th>パス</th><th>タイトル</th><th>PV</th><th>UU</th><th>平均滞在</th></tr></thead>
+  <tbody>
+  {%- for p in top_pages %}
+    <tr>
+      <td><code>{{ p.path }}</code></td>
+      <td>{{ p.title }}</td>
+      <td class="num">{{ p.page_views }}</td>
+      <td class="num">{{ p.users }}</td>
+      <td class="num">{{ "%.1f"|format(p.avg_time_on_page) }}s</td>
+    </tr>
+  {%- endfor %}
+  </tbody>
+</table>
+
+<h2>5. 流入チャネル</h2>
+<table>
+  <thead><tr><th>チャネル</th><th>セッション</th><th>UU</th><th>CV</th></tr></thead>
+  <tbody>
+  {%- for c in channels %}
+    <tr>
+      <td>{{ c.channel }}</td>
+      <td class="num">{{ c.sessions }}</td>
+      <td class="num">{{ c.users }}</td>
+      <td class="num">{{ c.conversions }}</td>
+    </tr>
+  {%- endfor %}
+  </tbody>
+</table>
+
+<h2>6. 検索クエリ (クリック順)</h2>
+<table>
+  <thead><tr><th>クエリ</th><th>クリック</th><th>表示</th><th>CTR</th><th>順位</th></tr></thead>
+  <tbody>
+  {%- for q in top_queries %}
+    <tr>
+      <td>{{ q.query }}</td>
+      <td class="num">{{ q.clicks }}</td>
+      <td class="num">{{ q.impressions }}</td>
+      <td class="num">{{ "%.1f"|format(q.ctr * 100) }}%</td>
+      <td class="num">{{ "%.1f"|format(q.position) }}</td>
+    </tr>
+  {%- endfor %}
+  </tbody>
+</table>
+
+{% if rising_queries %}
+<h2>7. 順位が上昇したクエリ</h2>
+<table>
+  <thead><tr><th>クエリ</th><th>クリック</th><th>表示</th><th>順位</th></tr></thead>
+  <tbody>
+  {%- for q in rising_queries %}
+    <tr>
+      <td>{{ q.query }}</td>
+      <td class="num">{{ q.clicks }}</td>
+      <td class="num">{{ q.impressions }}</td>
+      <td class="num">{{ "%.1f"|format(q.position) }}</td>
+    </tr>
+  {%- endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<h2>マーケターからの示唆 ({{ claude_model }})</h2>
+<div class="insights">{{ insights_markdown }}</div>
+
+<p class="meta">自動生成レポート — 数値は GA4 Data API / Search Console API の返却値に基づく。</p>
+</body>
+</html>

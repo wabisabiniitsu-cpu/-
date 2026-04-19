@@ -1,0 +1,41 @@
+# ハリナビ マーケティング分析ツール設定
+# 使い方: このファイルを config.yaml としてコピーし、値を埋める
+
+site:
+  name: "ハリナビ"
+  url: "https://www.harinavi.jp/"
+  measurement_id: "G-QBB53CDK4P"   # gtag 用 (参考)
+  # GA4 Data API に必要な数値プロパティ ID
+  # GA4 管理画面 > プロパティ設定 で確認できる
+  ga4_property_id: "REPLACE_WITH_NUMERIC_PROPERTY_ID"
+
+search_console:
+  # 登録済みサイトの URL (末尾スラッシュを含む)
+  site_url: "https://www.harinavi.jp/"
+
+# コンバージョンとして扱う GA4 イベント名
+# GA4 管理画面で「キーイベント」としてマーク済みのものを列挙
+conversion_events:
+  - "generate_lead"
+  - "contact"
+  - "purchase"
+
+# 日次レポートの送信先
+report:
+  recipients:
+    - "marketing@example.com"
+  # レポートの保存先ディレクトリ
+  output_dir: "./reports"
+  # 前日比 / 前週比 / 前月比 のどれで分析するか
+  comparison: "week_over_week"   # options: day_over_day / week_over_week / month_over_month
+
+# 閾値 (超えたら警告扱い)
+thresholds:
+  bounce_rate_warning: 0.70       # 直帰率 70% 以上で警告
+  conversion_rate_warning: 0.005  # コンバージョン率 0.5% 未満で警告
+  uu_drop_pct: -0.20              # UU が前期比 -20% 以下で警告
+
+# Claude モデル設定
+claude:
+  model: "claude-opus-4-7"
+  effort: "high"
