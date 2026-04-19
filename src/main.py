@@ -12,6 +12,7 @@ from rich.console import Console
 
 from .chat.assistant import chat_loop
 from .config import load_config
+from .english_chat.app import english_chat_loop
 from .pipeline import load_latest_payload, run_daily
 
 
@@ -51,6 +52,20 @@ def cmd_chat(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_english_chat(args: argparse.Namespace) -> int:
+    import os
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        try:
+            cfg = load_config(args.config)
+            api_key = cfg.env.get("ANTHROPIC_API_KEY")
+        except Exception:
+            pass
+    client = Anthropic(api_key=api_key or None)
+    english_chat_loop(client)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="harinavi-marketing",
@@ -76,6 +91,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("chat", help="最新レポートを元に対話型で質問する")
     s.set_defaults(func=cmd_chat)
+
+    s = sub.add_parser("english-chat", help="英会話練習アプリ: Claudeと英語で会話して文法を学ぶ")
+    s.set_defaults(func=cmd_english_chat)
 
     return p
 
