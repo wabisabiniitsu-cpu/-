@@ -30,7 +30,7 @@ agent_type="$(echo "$input" | jq -r '.agent_type // ""')"
   if [[ -f "$STATE" ]]; then
     current="$(cat "$STATE")"
   else
-    current='{"roles":["秘書","営業担当","記事担当","リサーチ担当","マーケター","レビュー担当"],"active":[]}'
+    current='{"roles":["秘書","営業担当","リサーチ担当","マーケター","レビュー担当"],"active":[]}'
   fi
 
   updated="$(echo "$current" | jq \

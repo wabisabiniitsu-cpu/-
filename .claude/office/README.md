@@ -27,7 +27,7 @@ Agentツールを呼ぶとき、`description` の先頭に `[担当名]` を付�
 description: "[営業担当] 美容鍼サロンへの営業リスト作成"
 ```
 
-タグの担当名は `state.json` の `roles`（秘書・営業担当・記事担当・リサーチ担当・マーケター・レビュー担当）
+タグの担当名は `state.json` の `roles`（秘書・営業担当・リサーチ担当・マーケター・レビュー担当）
 のいずれかに合わせる。タグがない場合は `subagent_type`（claude, general-purpose 等）がそのまま
 role として表示される。
 
