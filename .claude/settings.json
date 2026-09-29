@@ -2,11 +2,11 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Agent",
+        "matcher": "Agent|Task",
         "hooks": [
           {
             "type": "command",
-            "command": "bash /home/user/-/.claude/office/hooks/pretooluse_agent.sh 2>/dev/null || true"
+            "command": "bash .claude/office/hooks/pretooluse_agent.sh 2>>.claude/office/hook-error.log || true"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /home/user/-/.claude/office/hooks/subagent_start.sh 2>/dev/null || true"
+            "command": "bash .claude/office/hooks/subagent_start.sh 2>>.claude/office/hook-error.log || true"
           }
         ]
       }
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /home/user/-/.claude/office/hooks/subagent_stop.sh 2>/dev/null || true"
+            "command": "bash .claude/office/hooks/subagent_stop.sh 2>>.claude/office/hook-error.log || true"
           }
         ]
       }
