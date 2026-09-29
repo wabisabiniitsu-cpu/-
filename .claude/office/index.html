@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新津商店 AI社員オフィス</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --floor: #1c2030;
+    --desk: #3a3f55;
+    --desk-top: #4a5070;
+    --idle-glow: #2a2f45;
+    --active-glow: #ffcc55;
+    --active-glow-2: #ff8c42;
+    --text: #e8e8f0;
+    --sub: #9098b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(ellipse at 50% 0%, #1a1e2e 0%, var(--bg) 70%);
+    color: var(--text);
+    font-family: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; font-weight: 600; }
+  .sub { color: var(--sub); font-size: 13px; margin-bottom: 28px; }
+  .office {
+    position: relative;
+    width: min(920px, 100%);
+    aspect-ratio: 16 / 10;
+    perspective: 1200px;
+  }
+  .floor {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(55deg) rotateZ(45deg);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 28px;
+    place-items: center;
+    top: 8%;
+  }
+  .desk {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease;
+  }
+  .desk-base {
+    position: absolute;
+    inset: 0;
+    background: var(--desk);
+    border-radius: 10px;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.03) inset;
+  }
+  .desk-top {
+    position: absolute;
+    inset: 6px;
+    background: var(--desk-top);
+    border-radius: 6px;
+    transform: translateZ(14px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .monitor {
+    width: 34%;
+    height: 34%;
+    background: #14162080;
+    border-radius: 3px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .desk.active .desk-top {
+    background: linear-gradient(160deg, var(--active-glow), var(--active-glow-2));
+    box-shadow: 0 0 22px 6px rgba(255,180,60,0.55), 0 0 60px 18px rgba(255,140,40,0.25);
+  }
+  .desk.active .monitor {
+    background: #fff8e0;
+    box-shadow: 0 0 10px 3px rgba(255,240,180,0.9);
+  }
+  .desk.active { animation: bob 1.4s ease-in-out infinite; }
+  @keyframes bob {
+    0%, 100% { transform: translateZ(0); }
+    50% { transform: translateZ(6px); }
+  }
+  .label {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%) rotateZ(-45deg) rotateX(-55deg);
+    font-size: 12px;
+    white-space: nowrap;
+    color: var(--sub);
+    transition: color 0.3s ease;
+  }
+  .desk.active .label { color: #ffd685; font-weight: 600; }
+  .status-panel {
+    margin-top: 56px;
+    width: min(560px, 100%);
+    background: #171a26;
+    border: 1px solid #262b40;
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .status-panel h2 { font-size: 14px; margin: 0 0 10px; color: var(--sub); font-weight: 600; }
+  .status-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid #20233333;
+  }
+  .status-row:last-child { border-bottom: none; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #3a3f55; flex: none;
+  }
+  .status-row.on .dot { background: #ffcc55; box-shadow: 0 0 6px 2px rgba(255,204,85,0.7); }
+  .status-row .role { min-width: 88px; font-weight: 600; }
+  .status-row .desc { color: var(--sub); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .empty { color: var(--sub); font-size: 13px; padding: 4px 0; }
+  .conn-warn {
+    margin-top: 10px; font-size: 12px; color: #ff8c8c; display: none;
+  }
+</style>
+</head>
+<body>
+  <h1>新津商店 AI社員オフィス</h1>
+  <div class="sub">.claude/office/state.json を1秒ごとに読み込み、稼働中の担当を光らせます</div>
+
+  <div class="office">
+    <div class="floor" id="floor"></div>
+  </div>
+
+  <div class="status-panel">
+    <h2>稼働状況</h2>
+    <div id="statusList"><div class="empty">読み込み中…</div></div>
+    <div class="conn-warn" id="connWarn">state.json を取得できません。このページと同じディレクトリで `python3 -m http.server` を起動して開いてください。</div>
+  </div>
+
+<script>
+const ROLES = ["秘書", "営業担当", "記事担当", "リサーチ担当", "マーケター", "レビュー担当"];
+
+const floor = document.getElementById('floor');
+const deskEls = {};
+ROLES.forEach(role => {
+  const desk = document.createElement('div');
+  desk.className = 'desk';
+  desk.innerHTML = `
+    <div class="desk-base"></div>
+    <div class="desk-top"><div class="monitor"></div></div>
+    <div class="label">${role}</div>
+  `;
+  floor.appendChild(desk);
+  deskEls[role] = desk;
+});
+
+async function poll() {
+  try {
+    const res = await fetch('state.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('bad status');
+    const data = await res.json();
+    document.getElementById('connWarn').style.display = 'none';
+    render(data);
+  } catch (e) {
+    document.getElementById('connWarn').style.display = 'block';
+  }
+}
+
+function render(data) {
+  const active = data.active || [];
+  const activeRoles = new Set(active.map(a => a.role));
+
+  ROLES.forEach(role => {
+    deskEls[role].classList.toggle('active', activeRoles.has(role));
+  });
+
+  const listEl = document.getElementById('statusList');
+  if (active.length === 0) {
+    listEl.innerHTML = '<div class="empty">現在、稼働中の担当はいません</div>';
+    return;
+  }
+  listEl.innerHTML = active.map(a => `
+    <div class="status-row on">
+      <div class="dot"></div>
+      <div class="role">${escapeHtml(a.role || '')}</div>
+      <div class="desc">${escapeHtml(a.description || '')}</div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+poll();
+setInterval(poll, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/user/-/.claude/office/hooks/pretooluse_agent.sh 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/user/-/.claude/office/hooks/subagent_start.sh 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/user/-/.claude/office/hooks/subagent_stop.sh 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}

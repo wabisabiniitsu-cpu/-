@@ -31,3 +31,7 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# AI社員オフィス可視化（実行時に生成される状態ファイル）
+.claude/office/pending.jsonl
+.claude/office/.lock

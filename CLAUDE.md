@@ -51,6 +51,7 @@
 - 「秘書」は、社長と直接会話するこのセッション自身が担う。
 - 「営業担当」「記事担当」「リサーチ担当」「マーケター」「レビュー担当」は `.claude/agents/` 配下にサブエージェントとして定義済み（`eigyo-tantou.md` / `kiji-tantou.md` / `research-tantou.md` / `marketer.md` / `review-tantou.md`）。
 - 秘書（＝このセッション）は、社長からの依頼を受けたら該当のサブエージェントを呼び出し、成果物を集約して社長に報告する。
+- 「AI社員オフィス」可視化（`.claude/office/`）と連動させるため、Agentツールを呼ぶ際は `description` の先頭に `[担当名]`（例：`[営業担当] ...`）を付けること。詳細は `.claude/office/README.md` を参照。
 
 ## 4. 進み方（ワークフロー）
 
