@@ -6,165 +6,303 @@
 <title>新津商店 AI社員オフィス</title>
 <style>
   :root {
-    --bg: #0f1117;
-    --floor: #1c2030;
-    --desk: #3a3f55;
-    --desk-top: #4a5070;
-    --idle-glow: #2a2f45;
-    --active-glow: #ffcc55;
-    --active-glow-2: #ff8c42;
-    --text: #e8e8f0;
-    --sub: #9098b8;
+    --wall: #ede0c8;
+    --wall-dark: #ddcda8;
+    --floor-a: #cfe3ea;
+    --floor-b: #bcd6e0;
+    --tan-a: #e3c99a;
+    --tan-b: #d8bb85;
+    --desk-top: #b98a55;
+    --desk-side: #8a6339;
+    --desk-side2: #714f2c;
+    --text: #2b2015;
+    --panel-bg: #ffffff;
+    --panel-border: #e5decf;
+    --dot-on: #34d17a;
+    --dot-off: #c9c2b3;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    background: radial-gradient(ellipse at 50% 0%, #1a1e2e 0%, var(--bg) 70%);
+    background: #f4efe4;
     color: var(--text);
     font-family: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 16px 48px;
+    padding: 20px 12px 40px;
   }
-  h1 { font-size: 20px; margin: 0 0 4px; font-weight: 600; }
-  .sub { color: var(--sub); font-size: 13px; margin-bottom: 28px; }
-  .office {
+  h1 { font-size: 18px; margin: 0 0 2px; font-weight: 700; }
+  .sub { color: #8a8070; font-size: 12px; margin-bottom: 18px; }
+
+  .app {
+    display: flex;
+    gap: 14px;
+    width: min(980px, 100%);
+    align-items: flex-start;
+  }
+
+  .room-wrap {
     position: relative;
-    width: min(920px, 100%);
-    aspect-ratio: 16 / 10;
-    perspective: 1200px;
+    flex: 1;
+    background: linear-gradient(180deg, var(--wall) 0%, var(--wall) 46%, transparent 46%);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(60,45,20,0.18);
+    aspect-ratio: 4 / 3;
   }
+  .window {
+    position: absolute;
+    top: 8%;
+    width: 15%;
+    height: 12%;
+    background: repeating-linear-gradient(180deg, #eaf6ff, #eaf6ff 45%, #cfe3ea 45%, #cfe3ea 50%);
+    border: 3px solid var(--wall-dark);
+    border-radius: 4px;
+  }
+  .window.w1 { left: 6%; }
+  .window.w2 { left: 26%; }
+
   .floor {
     position: absolute;
     inset: 0;
+    top: 42%;
     transform-style: preserve-3d;
-    transform: rotateX(55deg) rotateZ(45deg);
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 28px;
-    place-items: center;
-    top: 8%;
   }
-  .desk {
-    position: relative;
-    width: 92px;
-    height: 92px;
-    transform-style: preserve-3d;
-    transition: transform 0.25s ease;
-  }
-  .desk-base {
+  .tile {
     position: absolute;
-    inset: 0;
-    background: var(--desk);
-    border-radius: 10px;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.03) inset;
+    width: 64px;
+    height: 64px;
+    transform: rotate(45deg) scale(1, 0.55);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .desk {
+    position: absolute;
+    width: 64px;
   }
   .desk-top {
+    width: 100%;
+    height: 34px;
+    background: linear-gradient(160deg, var(--desk-top), #a97c4c);
+    transform: rotate(45deg) scale(1, 0.55);
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset;
+  }
+  .desk-front {
     position: absolute;
-    inset: 6px;
-    background: var(--desk-top);
-    border-radius: 6px;
-    transform: translateZ(14px);
+    top: 17px;
+    left: 8px;
+    width: 48px;
+    height: 14px;
+    background: var(--desk-side);
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+  }
+  .desk-front::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -6px;
+    height: 6px;
+    background: var(--desk-side2);
+    clip-path: polygon(6% 0, 94% 0, 84% 100%, 16% 100%);
+  }
+  .monitor {
+    position: absolute;
+    left: 50%;
+    top: -6px;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 12px;
+    background: #2b2f3a;
+    border-radius: 2px;
+  }
+  .monitor::after {
+    content: "";
+    position: absolute;
+    inset: 1.5px;
+    background: #6fd2ff;
+    border-radius: 1px;
+    opacity: 0.85;
+  }
+
+  .character {
+    position: absolute;
+    left: 50%;
+    top: -34px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.25s ease;
+  }
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-  }
-  .monitor {
-    width: 34%;
-    height: 34%;
-    background: #14162080;
-    border-radius: 3px;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-  }
-  .desk.active .desk-top {
-    background: linear-gradient(160deg, var(--active-glow), var(--active-glow-2));
-    box-shadow: 0 0 22px 6px rgba(255,180,60,0.55), 0 0 60px 18px rgba(255,140,40,0.25);
-  }
-  .desk.active .monitor {
-    background: #fff8e0;
-    box-shadow: 0 0 10px 3px rgba(255,240,180,0.9);
-  }
-  .desk.active { animation: bob 1.4s ease-in-out infinite; }
-  @keyframes bob {
-    0%, 100% { transform: translateZ(0); }
-    50% { transform: translateZ(6px); }
-  }
-  .label {
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    transform: translateX(-50%) rotateZ(-45deg) rotateX(-55deg);
-    font-size: 12px;
-    white-space: nowrap;
-    color: var(--sub);
-    transition: color 0.3s ease;
-  }
-  .desk.active .label { color: #ffd685; font-weight: 600; }
-  .status-panel {
-    margin-top: 56px;
-    width: min(560px, 100%);
-    background: #171a26;
-    border: 1px solid #262b40;
-    border-radius: 12px;
-    padding: 16px 18px;
-  }
-  .status-panel h2 { font-size: 14px; margin: 0 0 10px; color: var(--sub); font-weight: 600; }
-  .status-row {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
     font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    border: 2px solid rgba(255,255,255,0.7);
+  }
+  .body {
+    width: 16px;
+    height: 12px;
+    margin-top: -3px;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .name-tag {
+    margin-top: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #4a3c2a;
+    background: rgba(255,255,255,0.85);
+    padding: 1px 5px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #2b2f3a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #2b2f3a;
+  }
+  .desk.active .character { animation: bounce 1.1s ease-in-out infinite; }
+  .desk.active .bubble { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+  .desk.active .avatar { box-shadow: 0 0 0 4px rgba(255,220,120,0.55), 0 3px 8px rgba(0,0,0,0.3); }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-4px); }
+  }
+
+  .prop { position: absolute; }
+  .plant { width: 26px; }
+  .plant .pot { width: 14px; height: 10px; background: #a96b3a; margin: 0 auto; border-radius: 0 0 4px 4px; }
+  .plant .leaves { width: 26px; height: 20px; background: radial-gradient(circle, #6fbf73, #4c9e50); border-radius: 50%; margin-bottom: -4px; }
+  .vending { width: 26px; height: 40px; background: linear-gradient(160deg,#e2453f,#b9302b); border-radius: 3px; box-shadow: 0 3px 6px rgba(0,0,0,0.25); position: relative; }
+  .vending::after { content:""; position:absolute; inset:4px 4px 14px 4px; background:#fff3; border-radius:2px; }
+  .bookshelf { width: 34px; height: 30px; background: #6b4a34; border-radius: 2px; box-shadow: 0 3px 6px rgba(0,0,0,0.25); display:flex; gap:2px; padding:3px; }
+  .bookshelf span { flex:1; border-radius:1px; }
+
+  .panel {
+    width: 220px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    flex: none;
+  }
+  .panel h2 { font-size: 13px; margin: 0 0 10px; font-weight: 700; }
+  .roster-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     padding: 6px 0;
-    border-bottom: 1px solid #20233333;
+    border-bottom: 1px solid #f0ece0;
   }
-  .status-row:last-child { border-bottom: none; }
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #3a3f55; flex: none;
-  }
-  .status-row.on .dot { background: #ffcc55; box-shadow: 0 0 6px 2px rgba(255,204,85,0.7); }
-  .status-row .role { min-width: 88px; font-weight: 600; }
-  .status-row .desc { color: var(--sub); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .empty { color: var(--sub); font-size: 13px; padding: 4px 0; }
-  .conn-warn {
-    margin-top: 10px; font-size: 12px; color: #ff8c8c; display: none;
-  }
+  .roster-row:last-child { border-bottom: none; }
+  .roster-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot-off); flex: none; }
+  .roster-row.on .roster-dot { background: var(--dot-on); box-shadow: 0 0 5px 1px rgba(52,209,122,0.7); }
+  .roster-text { display: flex; flex-direction: column; min-width: 0; }
+  .roster-role { font-size: 12px; font-weight: 700; }
+  .roster-task { font-size: 10px; color: #9a9080; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+  .conn-warn { margin-top: 10px; font-size: 11px; color: #c0392b; display: none; }
 </style>
 </head>
 <body>
   <h1>新津商店 AI社員オフィス</h1>
-  <div class="sub">.claude/office/state.json を1秒ごとに読み込み、稼働中の担当を光らせます</div>
+  <div class="sub">.claude/office/state.json を1秒ごとに読み込み中</div>
 
-  <div class="office">
-    <div class="floor" id="floor"></div>
-  </div>
+  <div class="app">
+    <div class="room-wrap">
+      <div class="window w1"></div>
+      <div class="window w2"></div>
+      <div class="floor" id="floor">
+        <div class="prop plant" style="left:4%; top:6%;"><div class="leaves"></div><div class="pot"></div></div>
+        <div class="prop plant" style="left:70%; top:56%;"><div class="leaves"></div><div class="pot"></div></div>
+        <div class="prop vending" style="left:16%; top:2%;"></div>
+        <div class="prop bookshelf" style="left:80%; top:8%;">
+          <span style="background:#e2453f"></span><span style="background:#4c9e50"></span><span style="background:#f2c14e"></span><span style="background:#3f8fd1"></span>
+        </div>
+      </div>
+    </div>
 
-  <div class="status-panel">
-    <h2>稼働状況</h2>
-    <div id="statusList"><div class="empty">読み込み中…</div></div>
-    <div class="conn-warn" id="connWarn">state.json を取得できません。このページと同じディレクトリで `python3 -m http.server` を起動して開いてください。</div>
+    <div class="panel">
+      <h2>社員一覧</h2>
+      <div id="roster"></div>
+      <div class="conn-warn" id="connWarn">state.json を取得できません。python3 -m http.server で開いてください。</div>
+    </div>
   </div>
 
 <script>
-const ROLES = ["秘書", "営業担当", "記事担当", "リサーチ担当", "マーケター", "レビュー担当"];
+const ROLE_STYLE = {
+  "秘書":         { color: "#3fb0c9", initial: "秘", pos: { left: "8%",  top: "10%" } },
+  "営業担当":     { color: "#4c9e50", initial: "営", pos: { left: "34%", top: "6%"  } },
+  "記事担当":     { color: "#e0a038", initial: "記", pos: { left: "60%", top: "14%" } },
+  "リサーチ担当": { color: "#4477e0", initial: "リ", pos: { left: "20%", top: "40%" } },
+  "マーケター":   { color: "#e0623f", initial: "マ", pos: { left: "48%", top: "46%" } },
+  "レビュー担当": { color: "#a163d6", initial: "レ", pos: { left: "72%", top: "38%" } }
+};
+const ROLES = Object.keys(ROLE_STYLE);
 
 const floor = document.getElementById('floor');
+const rosterEl = document.getElementById('roster');
 const deskEls = {};
+const bubbleEls = {};
+
 ROLES.forEach(role => {
+  const style = ROLE_STYLE[role];
   const desk = document.createElement('div');
   desk.className = 'desk';
+  desk.style.left = style.pos.left;
+  desk.style.top = style.pos.top;
   desk.innerHTML = `
-    <div class="desk-base"></div>
-    <div class="desk-top"><div class="monitor"></div></div>
-    <div class="label">${role}</div>
+    <div class="desk-top"></div>
+    <div class="desk-front"><div class="monitor"></div></div>
+    <div class="character">
+      <div class="bubble"></div>
+      <div class="avatar" style="background:${style.color}">${style.initial}</div>
+      <div class="body" style="background:${style.color}"></div>
+      <div class="name-tag">${role}</div>
+    </div>
   `;
   floor.appendChild(desk);
   deskEls[role] = desk;
+  bubbleEls[role] = desk.querySelector('.bubble');
 });
+
+function shorten(s, n) {
+  if (!s) return "稼働中";
+  s = s.replace(/^\[[^\]]*\]\s*/, "");
+  return s.length > n ? s.slice(0, n) + "…" : s;
+}
 
 async function poll() {
   try {
@@ -180,28 +318,30 @@ async function poll() {
 
 function render(data) {
   const active = data.active || [];
-  const activeRoles = new Set(active.map(a => a.role));
+  const byRole = {};
+  active.forEach(a => { byRole[a.role] = a; });
 
   ROLES.forEach(role => {
-    deskEls[role].classList.toggle('active', activeRoles.has(role));
+    const isOn = !!byRole[role];
+    deskEls[role].classList.toggle('active', isOn);
+    if (isOn) {
+      bubbleEls[role].textContent = shorten(byRole[role].description, 16) + "中";
+    }
   });
 
-  const listEl = document.getElementById('statusList');
-  if (active.length === 0) {
-    listEl.innerHTML = '<div class="empty">現在、稼働中の担当はいません</div>';
-    return;
-  }
-  listEl.innerHTML = active.map(a => `
-    <div class="status-row on">
-      <div class="dot"></div>
-      <div class="role">${escapeHtml(a.role || '')}</div>
-      <div class="desc">${escapeHtml(a.description || '')}</div>
-    </div>
-  `).join('');
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  rosterEl.innerHTML = ROLES.map(role => {
+    const on = !!byRole[role];
+    const task = on ? shorten(byRole[role].description, 22) : "待機中";
+    return `
+      <div class="roster-row ${on ? 'on' : ''}">
+        <div class="roster-dot"></div>
+        <div class="roster-text">
+          <div class="roster-role">${role}</div>
+          <div class="roster-task">${task}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 poll();
