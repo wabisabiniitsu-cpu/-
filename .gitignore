@@ -36,3 +36,4 @@ Thumbs.db
 .claude/office/pending.jsonl
 .claude/office/.lock
 .claude/office/hook-error.log
+.claude/office/state.json
